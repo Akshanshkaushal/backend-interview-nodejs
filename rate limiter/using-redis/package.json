@@ -1,0 +1,18 @@
+{
+  "name": "rate-limiter-redis",
+  "version": "1.0.0",
+  "description": "Rate limiter using Redis",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "redis": "^4.6.5",
+    "ip": "^1.1.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
