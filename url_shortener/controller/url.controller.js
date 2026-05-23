@@ -41,7 +41,9 @@ const createShortUrl = async (req, res) => {
 
 const redirectToOriginalUrl = async (req, res) => {
   try {
+
     const { code } = req.params;
+    
     if (!code) {
       return res.status(404).send({
         message: "invalid url",
