@@ -59,7 +59,7 @@ const signup = async (req, res) => {
     });
 
     // Generate JWT token
-    const token = generateToken(user._id, user.email, user.name);
+    const token = generateToken(user._id, user.email, user.name, user.role);
 
     return res.status(201).json({
       success: true,
@@ -68,6 +68,7 @@ const signup = async (req, res) => {
         userId: user._id,
         name: user.name,
         email: user.email,
+        role: user.role,
         token,
       },
     });
@@ -128,7 +129,7 @@ const login = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = generateToken(user._id, user.email, user.name);
+    const token = generateToken(user._id, user.email, user.name, user.role);
 
     return res.status(200).json({
       success: true,
@@ -137,10 +138,11 @@ const login = async (req, res) => {
         userId: user._id,
         name: user.name,
         email: user.email,
+        role: user.role,
         token,
       },
     });
-    
+
   } catch (error) {
     console.error("Login Error:", error);
     return res.status(500).json({

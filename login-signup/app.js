@@ -1,6 +1,7 @@
 const express = require("express");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 // Initialize Express app
 const app = express();
@@ -14,15 +15,25 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Health check
 app.get("/", (req, res) => {
   res.json({
-    message: "Login/Signup API is running",
-    endpoints: {
+    message: "Login/Signup API with RBAC is running",
+    authEndpoints: {
       signup: "POST /api/auth/signup",
       login: "POST /api/auth/login",
       profile: "GET /api/auth/profile (requires token)",
+    },
+    adminEndpoints: {
+      stats: "GET /api/admin/dashboard/stats (admin, superadmin)",
+      allUsers: "GET /api/admin/users (admin, superadmin)",
+      userById: "GET /api/admin/users/:userId (admin, superadmin)",
+      updateRole: "PUT /api/admin/users/:userId/role (superadmin only)",
+      deactivateUser: "PUT /api/admin/users/:userId/deactivate (superadmin only)",
+      activateUser: "PUT /api/admin/users/:userId/activate (superadmin only)",
+      deleteUser: "DELETE /api/admin/users/:userId (superadmin only)",
     },
   });
 });
