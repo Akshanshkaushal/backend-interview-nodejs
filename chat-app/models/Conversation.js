@@ -2,15 +2,8 @@ const mongoose = require('mongoose');
 
 const conversationSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      default: null, // null for DM, string for group
-    },
-    type: {
-      type: String,
-      enum: ['DM', 'GROUP'],
-      required: true,
-    },
+    name: { type: String, default: null },
+    type: { type: String, enum: ['DM', 'GROUP'], required: true },
     members: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -34,5 +27,7 @@ const conversationSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+conversationSchema.index({ members: 1, updatedAt: -1 });
 
 module.exports = mongoose.model('Conversation', conversationSchema);

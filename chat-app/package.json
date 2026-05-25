@@ -1,13 +1,13 @@
 {
   "name": "chat-app-server",
   "version": "1.0.0",
-  "description": "Minimal chat server with WebSockets, Redis, and Kafka",
+  "description": "Interview-ready chat backend with REST APIs, Socket.io, MongoDB, and Redis presence",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
-  "keywords": ["chat", "websocket", "redis", "kafka"],
+  "keywords": ["chat", "websocket", "redis", "mongodb"],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -15,7 +15,6 @@
     "socket.io": "^4.5.4",
     "mongoose": "^7.0.0",
     "redis": "^4.6.5",
-    "kafkajs": "^2.2.4",
     "dotenv": "^16.0.3",
     "cors": "^2.8.5",
     "jsonwebtoken": "^9.0.0",

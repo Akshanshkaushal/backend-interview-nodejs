@@ -51,14 +51,17 @@ const signup = async (req, res) => {
       });
     }
 
-    // Create new user
+    // Create new user salting
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = await User.create({
       name,
       email,
-      password,
+      hashedPassword,
     });
 
     // Generate JWT token
+    //HEADER.PAYLOAD.SIGNATURE
     const token = generateToken(user._id, user.email, user.name, user.role);
 
     return res.status(201).json({
@@ -119,7 +122,7 @@ const login = async (req, res) => {
     }
 
     // Compare passwords
-    const isPasswordValid = await user.comparePassword(password);
+    const isPasswordValid = await bcrypt.compare(password, user.password);;
 
     if (!isPasswordValid) {
       return res.status(401).json({

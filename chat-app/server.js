@@ -5,50 +5,44 @@ const http = require('http');
 const socketIO = require('socket.io');
 const cors = require('cors');
 const connectDB = require('./config/db');
-const redisClient = require('./config/redis');
+const gateway = require('./middleware/gateway');
 const { initializeSocket } = require('./utils/socketHandler');
 
-// Import routes
 const userRoutes = require('./routes/userRoutes');
-const chatRoutes = require('./routes/chatRoutes');
+const messageRoutes = require('./routes/messageRoutes');
+const groupRoutes = require('./routes/groupRoutes');
 
 const app = express();
 const server = http.createServer(app);
+
 const io = socketIO(server, {
   cors: { origin: '*', methods: ['GET', 'POST'] },
 });
 
-// Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/api/v1', gateway);
 
-// Connect to MongoDB
 connectDB();
-
-// Initialize WebSocket
 initializeSocket(io);
 
-// Routes
-app.use('/api/users', userRoutes);
-app.use('/api/chat', chatRoutes);
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/messages', messageRoutes);
+app.use('/api/v1/groups', groupRoutes);
 
-// Health check
 app.get('/health', (req, res) => {
-  res.status(200).json({ message: 'Server is running' });
+  res.json({ status: 'ok' });
 });
 
-// Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!', error: err.message });
+  console.error(err);
+  res.status(err.status || 500).json({ message: err.message || 'Server error' });
 });
 
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
   console.log(`Chat server running on port ${PORT}`);
-  console.log('WebSocket initialized');
-  console.log('Redis and MongoDB configured');
 });
 
 module.exports = app;

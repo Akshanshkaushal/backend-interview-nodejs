@@ -1,7 +1,11 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
 const connectDB = require("./config/db");
+const sessionConfig = require("./config/session");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const sessionAuthRoutes = require("./routes/sessionAuthRoutes");
 
 // Initialize Express app
 const app = express();
@@ -9,22 +13,36 @@ const app = express();
 // Connect to database
 connectDB();
 
-// Middleware
+// Middleware - Order matters!
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser()); // Parse cookies
+
+// Session middleware - MUST come after cookie-parser
+app.use(session(sessionConfig));
 
 // Routes
+// JWT-based authentication (token in header)
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+
+// Session-based authentication (cookie-based)
+app.use("/api/session-auth", sessionAuthRoutes);
 
 // Health check
 app.get("/", (req, res) => {
   res.json({
-    message: "Login/Signup API with RBAC is running",
-    authEndpoints: {
+    message: "Login/Signup API with RBAC (JWT & Session-based)",
+    jwtAuthentication: {
       signup: "POST /api/auth/signup",
       login: "POST /api/auth/login",
-      profile: "GET /api/auth/profile (requires token)",
+      profile: "GET /api/auth/profile (requires JWT token in header)",
+    },
+    sessionAuthentication: {
+      signup: "POST /api/session-auth/signup (sets cookie)",
+      login: "POST /api/session-auth/login (sets cookie)",
+      me: "GET /api/session-auth/me (requires valid session)",
+      logout: "POST /api/session-auth/logout (destroys session)",
     },
     adminEndpoints: {
       stats: "GET /api/admin/dashboard/stats (admin, superadmin)",
@@ -35,6 +53,7 @@ app.get("/", (req, res) => {
       activateUser: "PUT /api/admin/users/:userId/activate (superadmin only)",
       deleteUser: "DELETE /api/admin/users/:userId (superadmin only)",
     },
+    note: "Session cookies are HttpOnly (secure) and require credentials to be sent on requests",
   });
 });
 
